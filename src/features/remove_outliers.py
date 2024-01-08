@@ -226,14 +226,34 @@ for col in outlier_columns:
 # --------------------------------------------------------------
 # Check outliers grouped by label
 # --------------------------------------------------------------
+label = "bench"
+for col in outlier_columns:
+    dataset = mark_outliers_iqr(df[df["label"] == label], col)
+    plot_binary_outliers(
+        dataset=dataset, col=col, outlier_col= col + "_outlier", reset_index=True
+    )
 
+for col in outlier_columns:
+    dataset = mark_outliers_chauvenet(df[df["label"] == label], col)
+    plot_binary_outliers(
+        dataset=dataset, col=col, outlier_col= col + "_outlier", reset_index=True
+    )
+    
+    
+dataset, outliers, X_scores = mark_outliers_lof(df[df["label"] == label], outlier_columns)
+for col in outlier_columns:
+    plot_binary_outliers(
+        dataset=dataset, col=col, outlier_col="outlier_lof", reset_index=True
+    )
 
 # --------------------------------------------------------------
 # Choose method and deal with outliers
 # --------------------------------------------------------------
 
 # Test on single column
-
+col = "gyr_z"
+dataset = mark_outliers_chauvenet(df, col=col)
+dataset[dataset["gyr_z_outlier"]]
 
 # Create a loop
 
