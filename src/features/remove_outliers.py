@@ -255,8 +255,25 @@ col = "gyr_z"
 dataset = mark_outliers_chauvenet(df, col=col)
 dataset[dataset["gyr_z_outlier"]]
 
-# Create a loop
+dataset.loc[dataset["gyr_z_outlier"], ["gyr_z"]] = np.nan
 
+# Create a loop
+outliers_removed_df = df.copy()
+for col in outlier_columns:
+    for label in df["label"].unique():
+        dataset = mark_outliers_chauvenet(df[df["label"] == label], col)
+        
+        
+        # Replace values marked as outliers with nan
+        dataset.loc[dataset[col + "_outlier"], col] = np.nan
+        
+        #update the column in the original dataframe
+        outliers_removed_df.loc[(outliers_removed_df["label"] == label), col] = dataset[col]
+        n_ouliers = len(dataset) - len(dataset[col].dropna())
+        print(f"Removed {n_ouliers} from  {col} {label}")
+
+outliers_removed_df.info()
 # --------------------------------------------------------------
 # Export new dataframe
 # --------------------------------------------------------------
+outliers_removed_df.to_pickle("../../data/interim/02_ouliers_removed_chauvents.pkl")
